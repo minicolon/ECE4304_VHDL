@@ -48,7 +48,7 @@ component generic_decoder is -- Generic Nx2**N decoder
     Port( -- Port instantiation
         i_Din_gen : in  std_logic_vector(g_WIDTH - 1 downto 0);
         o_Dout_gen: out std_logic_vector(2**g_WIDTH - 1 downto 0)
-    );
+        );
 end component;
 
 component generic_mux_2x1 is -- Generic 2x1 mux with each data port being 2**(N-1) bits
