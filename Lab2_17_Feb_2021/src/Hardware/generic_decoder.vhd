@@ -37,7 +37,7 @@ entity generic_decoder is
     Port (-- Port instantiation
         i_Din_gen : in  std_logic_vector(g_WIDTH - 1 downto 0);
         o_Dout_gen: out std_logic_vector(2**g_WIDTH - 1 downto 0)
-        );
+    );
 end generic_decoder;
 
 architecture g_decoder_arch of generic_decoder is
@@ -55,45 +55,33 @@ end component;
 constant total_out: integer := 2**g_WIDTH;
 
 -- Create an array of arrays (2D array) for the 2x4 deocder enables
-type En_type is array (0 to (g_WIDTH/2)-1) of std_logic_vector((2**g_WIDTH)-1 downto 0);
+type En_type is array (0 to (g_WIDTH/2)) of std_logic_vector(total_out-1 downto 0);
 signal temp_En: En_type;
-
--- Temp signal to tie the first stage to the output port
-signal temp_Dout: std_logic_vector(total_out - 1 downto 0);
 
 begin
     -- Generates decoders from output (first stage) to input (last stage)
     GEN_STAGES: for i in 0 to g_WIDTH/2-1 generate -- Determines how many stages are required 
         GEN_DECODERS: for k in 0 to total_out/(4**(i+1)) - 1  generate -- Each stage decrements the decoders by a factor of 4
-            FIRST_STAGE: if (i = 0) generate -- When i is 0 create the first stage
-                BASE_DECODER: decoder_2x4 port map(
-                    i_En   => temp_En(i)(k),
-                    i_Din  => i_Din_gen((2*i)+1 downto 2*i),
-                    o_Dout => temp_Dout((4*k)+3 downto 4*k)
-                    );
-            end generate; 
-            REMAINING_STAGES: if (i /= 0) generate -- When i is not 0, map the output to the previous enable pins
-                BASE_DECODER: decoder_2x4 port map(
-                    i_En   => temp_En(i)(k),
-                    i_Din  => i_Din_gen((2*i)+1 downto 2*i),
-                    o_Dout => temp_En(i-1)((4*k)+3 downto 4*k)
-                    );
-            end generate;                     
+            BASE_DECODER: decoder_2x4 port map(
+                i_En   => temp_En(i+1)(k),
+                i_Din  => i_Din_gen((2*i)+1 downto 2*i),
+                o_Dout => temp_En(i)((4*k)+3 downto 4*k)
+                );
         end generate;
         
         -- When the input bit amount is odd (3, 5, etc.), assign the MSB of Din to the enable of the final 2 decoders
         IN_ODD_BITS: if (g_WIDTH mod 2 = 1) and (i = g_WIDTH/2-1) generate
-            temp_En(i)(total_out/(4**(i+1)) - 2) <= not i_Din_gen(g_WIDTH - 1);
-            temp_En(i)(total_out/(4**(i+1)) - 1) <= i_Din_gen(g_WIDTH - 1);        
+            temp_En(i+1)(total_out/(4**(i+1)) - 2) <= not i_Din_gen(g_WIDTH - 1);
+            temp_En(i+1)(total_out/(4**(i+1)) - 1) <= i_Din_gen(g_WIDTH - 1);        
         end generate;
         
         -- When the input amount is even (4, 6, etc.), all bits from Din are used so assign final enable to high        
         IN_EVEN_BITS: if (g_WIDTH mod 2 = 0) and (i = g_WIDTH/2-1) generate
-            temp_En(i)(total_out/(4**(i+1)) - 1) <= '1';        
+            temp_En(i+1)(total_out/(4**(i+1)) - 1) <= '1';        
         end generate; 
     end generate;
     
     -- Assign the output to the temp output generated in the first stage
-    o_Dout_gen <= temp_Dout;
+    o_Dout_gen <= temp_En(0)(total_out - 1 downto 0);
     
 end g_decoder_arch;
