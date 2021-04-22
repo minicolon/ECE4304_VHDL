@@ -8,3 +8,7 @@ Lab 2: Dealing with limited IO
 Lab 3: Binary to BCD converter
 
 Lab 4: 8-Digit BCD Counter
+
+Lab 5: Arithmetic Unit
+
+Lab 6: Generic Barrel Shifter
