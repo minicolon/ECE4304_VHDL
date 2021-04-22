@@ -12,3 +12,5 @@ Lab 4: 8-Digit BCD Counter
 Lab 5: Arithmetic Unit
 
 Lab 6: Generic Barrel Shifter
+
+Lab 7: UART System
