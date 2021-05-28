@@ -17,4 +17,4 @@ Lab 7: Arithmetic Unit/Barrel Shifter/UART System
 
 Lab 8: VGA Color Output from UART Input
 
-XXTEA: Implement [XXTEA](!https://en.wikipedia.org/wiki/XXTEA) Encryption Algorithm
+XXTEA: Implement [XXTEA](https://en.wikipedia.org/wiki/XXTEA) Encryption Algorithm
